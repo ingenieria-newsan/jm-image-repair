@@ -146,8 +146,8 @@ sleep .5
 
 # muestra mensaje en pantalla y espera confirmación
 title="REPARACIÓN DE IMAGEN"
-printf "\n\n\n \033[1;30m %*s \033[0m \n" $(((${#title}+$COLUMNS)/2)) "$title"
-printf "\n\n\t Se finalizó el analisis, se realizaran las siguientes acciones:\n\n\t"
+printf "\n\n \033[1;30m %*s \033[0m \n" $(((${#title}+$COLUMNS)/2)) "$title"
+printf "\n\n\tSe realizarán las siguientes acciones:\n\n\t"
 
 if [ $repair_windows == "true" ]
 	then
@@ -173,9 +173,10 @@ if [ $repair_hash == "true" ]
 fi
 printf " Reparación de hash de finalización de runing.\n\n"
 
-printf "\t El equipo debe disponerse al puesto ${repair_step}"
+printf "\tUna vez finalizado el proceso, disponga el equipo al puesto: \033[1;36m ${repair_step} \033[0m \n"
+printf "\tRecuerde siempre verificar el estado de la unidad en el sistema de trazabilidad.\n"
 
-text="---PRESIONE 'P' PARA PROCEDER O 'C' PARA CANCELAR ---"
+text="--- PRESIONE 'P' PARA PROCEDER O 'C' PARA CANCELAR ---"
 printf "\n\n\n %*s \n\n" $(((${#text}+$COLUMNS)/2)) "$text"
 
 # espera que se presione una tecla ---->>> P = Procedeer | C = Cancelar 
@@ -304,7 +305,7 @@ printf "[${m_info}] Apagando el equipo...\n"
 
 # mensaje de apagado
 printf "\n\n\n\033[1;30m APAGANDO EL EQUIPO \033[0m"
-printf "\n\n\t Espere hasta que la pantalla quede en negro y el LED indicador\n\t de encendido se apague"
+printf "\n Espere hasta que la pantalla quede en negro y el LED indicador\n\t de encendido se apague"
 
 sleep 5
 shutdown now
