@@ -1,0 +1,55 @@
+[/]
+default='b1dcc9dd-5262-4d8d-a863-c897e6d979b9'
+list=['b1dcc9dd-5262-4d8d-a863-c897e6d979b9', 'f5b4c009-461d-4ed7-b2ba-20baf58d5fc1', 'e22d9bca-5026-4464-b40a-d8a438b8acac', '22d7795d-2854-4c9d-9615-d98ca8447ff6', 'b28b50f4-8460-40cb-9adc-0855707405f9', '5c064dfe-3646-464c-94ce-c926fd8229de']
+
+[:22d7795d-2854-4c9d-9615-d98ca8447ff6]
+background-color='rgb(255,0,0)'
+font='Monospace 20'
+foreground-color='rgb(0,0,0)'
+use-system-font=false
+use-theme-colors=false
+visible-name='texto-error'
+
+[:5c064dfe-3646-464c-94ce-c926fd8229de]
+background-color='rgb(0,255,41)'
+use-theme-colors=false
+visible-name='texto-ok2'
+
+[:b1dcc9dd-5262-4d8d-a863-c897e6d979b9]
+audible-bell=true
+background-color='rgb(235,255,3)'
+default-size-columns=132
+default-size-rows=43
+exit-action='close'
+font='Monospace 20'
+foreground-color='rgb(5,5,5)'
+palette=['rgb(23,20,33)', 'rgb(192,28,40)', 'rgb(38,162,105)', 'rgb(162,115,76)', 'rgb(18,72,139)', 'rgb(163,71,186)', 'rgb(42,161,179)', 'rgb(208,207,204)', 'rgb(94,92,100)', 'rgb(246,97,81)', 'rgb(51,218,122)', 'rgb(249,227,24)', 'rgb(42,123,222)', 'rgb(192,97,203)', 'rgb(51,199,222)', 'rgb(255,255,255)']
+scrollbar-policy='never'
+use-system-font=false
+use-theme-colors=false
+visible-name='texto'
+
+[:b28b50f4-8460-40cb-9adc-0855707405f9]
+background-color='rgb(255,0,0)'
+font='Monospace 8'
+foreground-color='rgb(0,0,0)'
+use-system-font=false
+use-theme-colors=false
+visible-name='qr-error'
+
+[:e22d9bca-5026-4464-b40a-d8a438b8acac]
+background-color='rgb(50,255,0)'
+font='Monospace 20'
+foreground-color='rgb(0,0,0)'
+use-system-font=false
+use-theme-colors=false
+visible-name='texto-ok'
+
+[:f5b4c009-461d-4ed7-b2ba-20baf58d5fc1]
+background-color='rgb(0,255,12)'
+font='Monospace 8'
+foreground-color='rgb(0,0,0)'
+palette=['rgb(23,20,33)', 'rgb(192,28,40)', 'rgb(38,162,105)', 'rgb(162,115,76)', 'rgb(18,72,139)', 'rgb(163,71,186)', 'rgb(42,161,179)', 'rgb(208,207,204)', 'rgb(94,92,100)', 'rgb(246,97,81)', 'rgb(51,218,122)', 'rgb(233,173,12)', 'rgb(42,123,222)', 'rgb(192,97,203)', 'rgb(51,199,222)', 'rgb(255,255,255)']
+use-system-font=false
+use-theme-colors=false
+visible-name='qr-ok'
