@@ -43,10 +43,10 @@ printf "[${m_info}] Validando bios...\n"
 bios_check=false
 if [ $(cat $dir_base/versiones/bios.version) = $(sudo dmidecode -s bios-version) ]
 	then
-		printf "[${m_pass}] Validación de BIOS correcta.\n"
+		printf "[${m_pass}] Validación de bios correcta.\n"
 		bios_check=true
 	else
-		printf "[${m_fail}] Falló la validación de BIOS.\n"
+		printf "[${m_fail}] Falló la validación de bios.\n"
 		bios_check=false
 fi
 
@@ -71,10 +71,10 @@ printf "[${m_info}] a=${hash_archivo} \n[${m_info}] e=${hash_equipo} \n"
 # compara los hash de equipo y archivo
 if [ $hash_equipo = $hash_archivo ]
 	then
-		printf "[${m_pass}] Validación de SHA1 correcta.\n"
+		printf "[${m_pass}] Validación de hash correcta.\n"
 		hash_check=true
 	else
-		printf "[${m_fail}] Validación de SHA1 incorrecta.\n"
+		printf "[${m_fail}] Validación de hash incorrecta.\n"
 		hash_check=false
 fi
 
@@ -93,7 +93,7 @@ repair_hash=false
 repair_step="PUESTO-NO-DETERMINADO"
 
 # configuracion de proceso para 0 particiones y sin BIOS updated
-if [ $partition_qtty = 0 ] && [ bios_check == "false" ]
+if [ $partition_qtty = 0 ] && [ $bios_check == "false" ]
 	then
 		printf "[${m_info}] No se detectaron particiones en el disco ni bios actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
 		repair_windows=true
@@ -103,7 +103,7 @@ if [ $partition_qtty = 0 ] && [ bios_check == "false" ]
 fi
 
 # configuracion de proceso para 0 particiones y sin BIOS updated
-if [ $partition_qtty = 0 ] && [ bios_check == "true" ]
+if [ $partition_qtty = 0 ] && [ $bios_check == "true" ]
 	then
 		printf "[${m_info}] No se detectaron particiones en el disco pero se detectó el bios actualizado.\n[${m_info}] Se restaurará a puesto de BIOS.\n"
 		repair_windows=true
@@ -113,7 +113,7 @@ if [ $partition_qtty = 0 ] && [ bios_check == "true" ]
 fi
 
 # configuracion de proceso para 4 particiones sin BIOS
-if [ $partition_qtty = 4 ] && [ bios_check == "false" ]
+if [ $partition_qtty = 4 ] && [ $bios_check == "false" ]
 	then
 		printf "[${m_info}] Detectaron 4 particiones en el disco pero el bios no fue actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
 		repair_windows=true
@@ -123,7 +123,7 @@ if [ $partition_qtty = 4 ] && [ bios_check == "false" ]
 fi
 
 # configuracion de proceso para 4 particiones, BIOS y HASH
-if [ $partition_qtty = 4 ] && [ bios_check == "true" ] && [ hash_check == "true" ]
+if [ $partition_qtty = 4 ] && [ $bios_check == "true" ] && [ $hash_check == "true" ]
 	then
 		printf "[${m_info}] Detectaron 4 particiones en el disco pero el bios no fue actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
 		repair_windows=true
@@ -133,7 +133,7 @@ if [ $partition_qtty = 4 ] && [ bios_check == "true" ] && [ hash_check == "true"
 fi
 
 # configuracion de proceso para 6 particiones	
-if [ $partition_qtty = 6 ] && [ bios_check == "true" ]
+if [ $partition_qtty = 6 ] && [ $bios_check == "true" ]
 	then
 		printf "[${m_info}] Se detectaron 6 particiones en el disco y bios actualizado \n[${m_info}] Se restaurará a puesto de BIOS.\n"
 		repair_windows=true
