@@ -87,105 +87,30 @@ printf "[${m_info}] Se detectaron ${partition_qtty} particiones en el disco.\n"
 sleep .5
 
 # configuración de recuperación
-repair_windows=false
-repair_boot=false
-repair_hash=false
-repair_step="PUESTO-NO-DETERMINADO"
+repair_2_bios=false
 
 # configuracion de proceso para 0 particiones
-if [ $partition_qtty = 0 ] 
+if [ $hash_check == "true" ] || [ $bios_check == "true" ]
 	then
-
-		if [ $bios_check == "true" ]
-
-			# con bios actualizado
-			then
-				printf "[${m_info}] No se detectaron particiones en el disco pero se detectó el bios actualizado.\n[${m_info}] Se restaurará a puesto de BIOS.\n"
-				repair_windows=true
-				repair_boot=false
-				repair_hash=true
-				repair_step="BIOS"
-
-			# sin bios actializado
-			else
-				printf "[${m_info}] No se detectaron particiones en el disco ni bios actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
-				repair_windows=true
-				repair_boot=false
-				repair_hash=false
-				repair_step="INICIO"
-
-		fi
-
+		repair_2_bios=false
+		printf "[${m_info}] Reparación a puesto BIOS habilitada.\n"
 fi
-
-# configuracion de proceso para 4 particiones
-if [ $partition_qtty = 4 ] && [ $bios_check == "false" ]
-	then
-
-		if [ $bios_check == "true" ]
-
-			# con bios actualizado
-			then
-				printf "[${m_info}] Se detectaron 4 particiones en el disco y el bios actualizado.\n[${m_info}] Se restaurará a puesto de BIOS.\n"
-				repair_windows=false
-				repair_boot=true
-				repair_hash=true
-				repair_step="BIOS"
-
-			# sin bios actializado
-			else
-				printf "[${m_info}] Detectaron 4 particiones en el disco. El bios no fue actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
-				repair_windows=true
-				repair_boot=false
-				repair_hash=false
-				repair_step="INICIO"
-
-		fi
-
-fi
-
-# configuracion de proceso para 6 particiones	
-if [ $partition_qtty = 6 ] && [ $bios_check == "true" ]
-	then
-		printf "[${m_info}] Se detectaron 6 particiones en el disco y bios actualizado \n[${m_info}] Se restaurará a puesto de BIOS.\n"
-		repair_windows=true
-		repair_boot=false
-		repair_hash=true
-		repair_step="BIOS"
-fi
-
-sleep .5
 
 # muestra mensaje en pantalla y espera confirmación
 title="REPARACIÓN DE IMAGEN"
 printf "\n\n \033[1;30m %*s \033[0m \n" $(((${#title}+$COLUMNS)/2)) "$title"
-printf "\n\n\tSe realizarán las siguientes acciones:\n\n\t"
+printf "\n\n\tOpciones abilitadas\n"
+printf "\n\t[${m_si}] Reparación a puesto TESTEO 01.\n\t"
 
-if [ $repair_windows == "true" ]
+if [ $repair_2_bios == "true" ]
 	then
 		printf "[${m_si}]"
 	else
 		printf "[${m_no}]"
 fi
-printf " Restauración de imagen de testeo.\n\t"
+printf " Reparación a puesto BIOS.\n\t"
 
-if [ $repair_boot == "true" ]
-	then
-		printf "[${m_si}]"
-	else
-		printf "[${m_no}]"
-fi
-printf " Reparación de booteo en imagen de testeo.\n\t"
-
-if [ $repair_hash == "true" ]
-	then
-		printf "[${m_si}]"
-	else
-		printf "[${m_no}]"
-fi
-printf " Reparación de hash de finalización de runing.\n\n"
-
-printf "\tUna vez finalizado el proceso, disponga el equipo al puesto: \033[1;36m ${repair_step} \033[0m \n"
+#printf "\tUna vez finalizado el proceso, disponga el equipo al puesto: \033[1;36m ${repair_step} \033[0m \n"
 printf "\n\tRecuerde siempre verificar el estado de la unidad en el trazabilidad \n\tantes de proceder.\n"
 
 text="--- PRESIONE 'P' PARA PROCEDER O 'C' PARA CANCELAR ---"
@@ -307,6 +232,13 @@ if [ $key == "p" ]
 
 					done
 		fi
+
+		# ¿restaurar bootero?
+
+
+		# ¿generar hash?
+
+
 
 
 ### WORKING !!!
