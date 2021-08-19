@@ -101,9 +101,9 @@ if [ $hash_check == "true" ] || [ $bios_check == "true" ]
 fi
 
 # muestra mensaje en pantalla y espera confirmación
-printf "\n\n\t\033[1;30m\033[1;41mREPARACIÓN DE IMAGEN\033[0m \n"
-printf "\n\n\tOpciones habilitadas\n"
-printf "\n\t[${m_si}] Reparación a puesto TESTEO 01.\n\t"
+printf "\n\n\t\033[1;30m\033[1;41m REPARACIÓN DE IMAGEN \033[0m \n"
+printf "\n\tOpciones habilitadas:\n"
+printf "\n\t[${m_si}] Reparación a puesto TESTEO 01.\t Presiones 'T'.\n\t"
 
 if [ $repair_2_bios == "true" ]
 	then
@@ -111,13 +111,12 @@ if [ $repair_2_bios == "true" ]
 	else
 		printf "[${m_no}]"
 fi
-printf " Reparación a puesto BIOS.\n\t"
+printf " Reparación a puesto BIOS.\t Presiones 'B'.\n\t"
 
-#printf "\tUna vez finalizado el proceso, disponga el equipo al puesto: \033[1;36m ${repair_step} \033[0m \n"
-printf "\n\tRecuerde siempre verificar el estado de la unidad en el trazabilidad \n\tantes de proceder.\n"
+printf "\n\t- Recuerde que si el equipo fue abierto debe disponerse al puesto TESTO 01.\n"
+printf "\n\t- Recuerde siempre verificar el estado de la unidad en trazabilidad tantes de proceder.\n"
 
-text="--- PRESIONE 'P' PARA PROCEDER O 'C' PARA CANCELAR ---"
-printf "\n\n %*s \n\n" $(((${#text}+$COLUMNS)/2)) "$text"
+printf "\n\tPRESIONE UNA DE LAS OPCIONES PARA CONTINUAR, O 'C' PARA CANCELAR"
 
 # espera que se presione una tecla ---->>> P = Procedeer | C = Cancelar 
 read -s -n 1 -p "" key
