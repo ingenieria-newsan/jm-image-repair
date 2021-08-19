@@ -240,12 +240,7 @@ if [ $key == "t" ] || [ $key == "b" ]
 
 		# ¿generar hash?
 
-
-
-
 ### WORKING !!!
-
-
 
 	else
 		printf "[${m_info}] Cancelar.\n"
