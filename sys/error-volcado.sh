@@ -8,11 +8,8 @@ clear
 COLUMNS=$(tput cols) 
 title="ERROR EN EL VOLCADO DE LA IMAGEN ( intento #${1} )"
 printf "\n\n \033[1;30m %*s \033[0m \n" $(((${#title}+$COLUMNS)/2)) "$title"
-printf "\n\n  Proceda de la siguiente manera:"
-printf "\n\n\t 1) Verifique, SIN deconectar, que el disco de volcado se encuentre bien \n\t conectado."
-printf "\n\n\t 2) Si el disco está bien conectado, y es la primera vez que sucede un \n\t fallo, puede reintarlo presionando 'L'."
-printf "\n\n\t 3) Si ya reintentó o detectó una mala conexión, presione 'A'."
-
+printf "\n\n\t 1) Presione 'L' para reintentar."
+printf "\n\n\t 2) Presione 'A' para cancelar"
 text="PRESIONE 'L' o 'A' PARA CONTINUAR" 
 printf "\n\n\n %*s \n" $(((${#text}+$COLUMNS)/2)) "$text"
 
@@ -26,7 +23,13 @@ done
 # ejecuta si se presiona a
 if [ $key == "a" ]
 	then
-		gnome-terminal --full-screen --hide-menubar --profile texto-error --wait -- ./sys/error-generico.sh VOLCADO IMAGEN
+	
+		# mensaje de apagado
+		printf "\n\n\n\033[1;34m APAGANDO EL EQUIPO \033[0m"
+		printf "\n Espere hasta que la pantalla quede en negro y el LED indicador\n de encendido se apague"
+
+		sleep 5
+		shutdown now
 fi
 
 # ejecuta si se presiona l

@@ -14,10 +14,9 @@ dir_base=`dirname $SCRIPT`;
 
 # muestra la version de la herramienta
 version=$(cat $dir_base/.git/refs/heads/master)
-printf "[${m_info}] Compilacion de la herramienta = ${version}\n"
+printf "[${m_info}] tool_version=${version}\n"
 
 # chequea que nombre tiene el disco de ubuntu y el de huayra
-printf "[${m_info}] Detectando discos...\n"
 ubuntu=$(lsblk -no pkname $(findmnt -n / | awk '{ print $2 }'))
 huayra="sda"
 
@@ -26,38 +25,38 @@ if [ $ubuntu == $huayra ]
 		huayra="sdb"
 fi
 
-printf "[${m_info}] Discos: repair=${ubuntu} target=${huayra}.\n"
+printf "[${m_info}] repair_disk=${ubuntu} target_disk=${huayra}.\n"
 
 sleep .5
 
 # monta la particion donde se encuentra la imagen del a volcar en /home/partimag
-printf "[${m_info}] Montando particiones de reparación...\n"
-
 sudo umount /dev/${ubuntu}3 > /dev/null 2>&1
-sudo mount /dev/${ubuntu}3 /home/partimag
-
 sudo umount /jmdisk > /dev/null 2>&1
+
 sudo mkdir /jmdisk > /dev/null 2>&1
-sudo mount /dev/${huayra}3 /jmdisk
+sudo mkdir /jmefi > /dev/null 2>&1
+
+sudo mount /dev/${ubuntu}3 /home/partimag
+sudo mount /dev/${huayra}3 /jmdisk > /dev/null 2>&1
+sudo mount /dev/${huayra}1 /jmefi > /dev/null 2>&1
 
 sleep .5
 
 # chequea la version actual de la BIOS con la que se le da por parametro en el archivo
-printf "[${m_info}] Validando bios...\n"
 bios_check=false
 if [ $(cat $dir_base/versiones/bios.version) = $(sudo dmidecode -s bios-version) ]
 	then
-		printf "[${m_pass}] Validación de bios correcta.\n"
+		printf "[${m_pass}]"
 		bios_check=true
 	else
-		printf "[${m_fail}] Falló la validación de bios.\n"
+		printf "[${m_fail}]"
 		bios_check=false
 fi
+printf "Validación de bios.\n"
 
 sleep .5
 
 # Validación de sha1
-printf "[${m_info}] Validando hash...\n"
 hash_check=false
 cd $dir_base
 hash_equipo=$(./sys/hash.sh)
@@ -70,23 +69,24 @@ if [ -e /jmdisk/SHA1/test.txt ]
 fi
 
 # muestra los hash a los fines de hacer debug
-printf "[${m_info}] a=${hash_archivo} \n[${m_info}] e=${hash_equipo} \n"
+printf "[${m_info}] hash_archivo=${hash_archivo} \n[${m_info}] hash_equipo=${hash_equipo} \n"
 
 # compara los hash de equipo y archivo
 if [ $hash_equipo = $hash_archivo ]
 	then
-		printf "[${m_pass}] Validación de hash correcta.\n"
+		printf "[${m_pass}]"
 		hash_check=true
 	else
-		printf "[${m_fail}] Validación de hash incorrecta.\n"
+		printf "[${m_fail}]"
 		hash_check=false
 fi
+printf "Validación de hash.\n"
 
 sleep .5
 
 # analizar cantidad de particiones en el disco
 partition_qtty=$(grep -c $huayra /proc/partitions)
-printf "[${m_info}] Se detectaron ${partition_qtty} particiones en el disco.\n"
+printf "[${m_info}] partition_qtty=${partition_qtty} \n"
 
 sleep .5
 
@@ -97,8 +97,11 @@ repair_2_bios=false
 if [ $hash_check == "true" ] || [ $bios_check == "true" ]
 	then
 		repair_2_bios=false
-		printf "[${m_info}] Reparación a puesto BIOS habilitada.\n"
+		
 fi
+printf "[${m_info}] repair_2_bios=${repair_2_bios} \n"
+
+sleep .5
 
 # muestra mensaje en pantalla y espera confirmación
 printf "\n\n\t\033[1;30m\033[1;41m REPARACIÓN DE IMAGEN \033[0m \n"
@@ -110,12 +113,12 @@ if [ $repair_2_bios == "true" ]
 		printf "[\033[1;32m LETRA B \033[0m] Reparación a puesto BIOS.\n\t"
 fi
 
-printf "\n\t- Recuerde que si el equipo fue abierto debe disponerse al puesto TESTO 01.\n"
-printf "\t- Recuerde siempre verificar el estado de la unidad en trazabilidad tantes de proceder.\n"
+printf "\n\t- Recuerde que si el equipo fue abierto debe disponerse al puesto TESTEO 01.\n"
+printf "\t- Recuerde siempre verificar el estado de la unidad en TRAZABILIDAD tantes de proceder.\n"
 
 printf "\n\n\tPRESIONE UNA DE LAS OPCIONES PARA CONTINUAR, O 'C' PARA CANCELAR"
 
-# espera que se presione una tecla ---->>> P = Procedeer | C = Cancelar 
+# espera que se presione una tecla 
 read -s -n 1 -p "" key
 while [ $key != "c" ] && [ $key != "t" ] && [ $key != "b" ]
 	do
@@ -126,12 +129,13 @@ sleep .5
 
 # desmonta el disco donde se encuentra el flag del running
 sudo umount /jmdisk > /dev/null 2>&1
+sudo umount /jmefi > /dev/null 2>&1
 
 # main process
-if [ $key == "p" ]
+if [ $key == "t" ] || [ $key == "b" ]
 	then
 
-		printf "[${m_info}] Procedeer.\n"
+		printf "[${m_info}] Proceder.\n"
 		
 		# valida que la bateria esté conectada
 		bateria=$(cat /sys/class/power_supply/ADP1/online) #bateria=$(cat /sys/class/power_supply/ACAD/online)
@@ -139,12 +143,10 @@ if [ $key == "p" ]
 			then
 				printf "[${m_warn}] Falta conexión a alimentación externa\n"
 				gnome-terminal --full-screen --hide-menubar --profile texto-error --wait -- ./sys/error-bateria.sh
-			else
-				printf "[${m_info}] Conexión a alimentación externa detectada\n"
 		fi
-		
+
 		# ¿volcado de imagen?
-		if [ $repair_windows == "true" ]
+		if [ $partition_qtty != 4 ]
 			then
 
 				# mensaje volcado de imagen
@@ -173,7 +175,7 @@ if [ $key == "p" ]
 						printf "[${m_info}] Iniciando validaciones...\n"
 
 						# validación de particiones
-						if [ $(grep -c $huayra /proc/partitions) = 6 ]
+						if [ $(grep -c $huayra /proc/partitions) = 4 ]
 							then
 								printf "[${m_pass}]"
 							else
@@ -230,10 +232,11 @@ if [ $key == "p" ]
 						fi
 
 					done
+
+			else
+				### RESTAURAR ARCHIVOS DE ARRANQUE
+		
 		fi
-
-		# ¿restaurar bootero?
-
 
 		# ¿generar hash?
 
@@ -251,7 +254,7 @@ fi
 printf "[${m_info}] Apagando el equipo...\n"
 
 # mensaje de apagado
-printf "\n\n\n\033[1;30m APAGANDO EL EQUIPO \033[0m"
+printf "\n\n\n\033[1;34m APAGANDO EL EQUIPO \033[0m"
 printf "\n Espere hasta que la pantalla quede en negro y el LED indicador\n de encendido se apague"
 
 sleep 5
