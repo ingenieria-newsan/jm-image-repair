@@ -13,7 +13,7 @@ SCRIPT=$(readlink -f $0);
 dir_base=`dirname $SCRIPT`;
 
 # muestra la version de la herramienta
-version=$(cat $dir_base/.git/ref/heads/master)
+version=$(cat $dir_base/.git/refs/heads/master)
 printf "[${m_info}] Compilacion de la herramienta = ${version}\n"
 
 # chequea que nombre tiene el disco de ubuntu y el de huayra
