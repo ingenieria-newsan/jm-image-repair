@@ -52,7 +52,7 @@ if [ $(cat $dir_base/versiones/bios.version) = $(sudo dmidecode -s bios-version)
 		printf "[${m_fail}]"
 		bios_check=false
 fi
-printf "Validación de bios.\n"
+printf " Validación de bios.\n"
 
 sleep .5
 
@@ -80,7 +80,7 @@ if [ $hash_equipo = $hash_archivo ]
 		printf "[${m_fail}]"
 		hash_check=false
 fi
-printf "Validación de hash.\n"
+printf " Validación de hash.\n"
 
 sleep .5
 
@@ -96,8 +96,7 @@ repair_2_bios=false
 # configuracion de proceso para 0 particiones
 if [ $hash_check == "true" ] || [ $bios_check == "true" ]
 	then
-		repair_2_bios=false
-		
+		repair_2_bios=true
 fi
 printf "[${m_info}] repair_2_bios=${repair_2_bios} \n"
 
