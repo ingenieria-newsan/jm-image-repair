@@ -103,24 +103,21 @@ fi
 # muestra mensaje en pantalla y espera confirmación
 printf "\n\n\t\033[1;30m\033[1;41m REPARACIÓN DE IMAGEN \033[0m \n"
 printf "\n\tOpciones habilitadas:\n"
-printf "\n\t[${m_si}] Reparación a puesto TESTEO 01.\t Presiones 'T'.\n\t"
+printf "\n\t[\033[1;32m LETRA T \033[0m] Reparación a puesto TESTEO 01.\n\t"
 
 if [ $repair_2_bios == "true" ]
 	then
-		printf "[${m_si}]"
-	else
-		printf "[${m_no}]"
+		printf "[\033[1;32m LETRA B \033[0m] Reparación a puesto BIOS.\n\t"
 fi
-printf " Reparación a puesto BIOS.\t Presiones 'B'.\n\t"
 
 printf "\n\t- Recuerde que si el equipo fue abierto debe disponerse al puesto TESTO 01.\n"
-printf "\n\t- Recuerde siempre verificar el estado de la unidad en trazabilidad tantes de proceder.\n"
+printf "\t- Recuerde siempre verificar el estado de la unidad en trazabilidad tantes de proceder.\n"
 
-printf "\n\tPRESIONE UNA DE LAS OPCIONES PARA CONTINUAR, O 'C' PARA CANCELAR"
+printf "\n\n\tPRESIONE UNA DE LAS OPCIONES PARA CONTINUAR, O 'C' PARA CANCELAR"
 
 # espera que se presione una tecla ---->>> P = Procedeer | C = Cancelar 
 read -s -n 1 -p "" key
-while [ $key != "p" ] && [ $key != "c" ]
+while [ $key != "c" ] && [ $key != "t" ] && [ $key != "b" ]
 	do
 		read -s -n 1 -p "" key
 done
