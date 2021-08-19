@@ -97,9 +97,8 @@ if [ $hash_check == "true" ] || [ $bios_check == "true" ]
 fi
 
 # muestra mensaje en pantalla y espera confirmación
-title="REPARACIÓN DE IMAGEN"
-printf "\n\n \033[1;30m %*s \033[0m \n" $(((${#title}+$COLUMNS)/2)) "$title"
-printf "\n\n\tOpciones abilitadas\n"
+printf "\n\n\t\033[1;30m\033[1;41mREPARACIÓN DE IMAGEN\033[0m \n"
+printf "\n\n\tOpciones habilitadas\n"
 printf "\n\t[${m_si}] Reparación a puesto TESTEO 01.\n\t"
 
 if [ $repair_2_bios == "true" ]
