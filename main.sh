@@ -92,44 +92,56 @@ repair_boot=false
 repair_hash=false
 repair_step="PUESTO-NO-DETERMINADO"
 
-# configuracion de proceso para 0 particiones y sin BIOS updated
-if [ $partition_qtty = 0 ] && [ $bios_check == "false" ]
+# configuracion de proceso para 0 particiones
+if [ $partition_qtty = 0 ] 
 	then
-		printf "[${m_info}] No se detectaron particiones en el disco ni bios actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
-		repair_windows=true
-		repair_boot=false
-		repair_hash=false
-		repair_step="INICIO"
+
+		if [ $bios_check == "true" ]
+
+			# con bios actualizado
+			then
+				printf "[${m_info}] No se detectaron particiones en el disco pero se detectó el bios actualizado.\n[${m_info}] Se restaurará a puesto de BIOS.\n"
+				repair_windows=true
+				repair_boot=false
+				repair_hash=true
+				repair_step="BIOS"
+
+			# sin bios actializado
+			else
+				printf "[${m_info}] No se detectaron particiones en el disco ni bios actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
+				repair_windows=true
+				repair_boot=false
+				repair_hash=false
+				repair_step="INICIO"
+
+		fi
+
 fi
 
-# configuracion de proceso para 0 particiones y sin BIOS updated
-if [ $partition_qtty = 0 ] && [ $bios_check == "true" ]
-	then
-		printf "[${m_info}] No se detectaron particiones en el disco pero se detectó el bios actualizado.\n[${m_info}] Se restaurará a puesto de BIOS.\n"
-		repair_windows=true
-		repair_boot=false
-		repair_hash=true
-		repair_step="BIOS"
-fi
-
-# configuracion de proceso para 4 particiones sin BIOS
+# configuracion de proceso para 4 particiones
 if [ $partition_qtty = 4 ] && [ $bios_check == "false" ]
 	then
-		printf "[${m_info}] Detectaron 4 particiones en el disco pero el bios no fue actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
-		repair_windows=true
-		repair_boot=false
-		repair_hash=false
-		repair_step="INICIO"
-fi
 
-# configuracion de proceso para 4 particiones, BIOS y HASH
-if [ $partition_qtty = 4 ] && [ $bios_check == "true" ] && [ $hash_check == "true" ]
-	then
-		printf "[${m_info}] Detectaron 4 particiones en el disco pero el bios no fue actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
-		repair_windows=true
-		repair_boot=false
-		repair_hash=false
-		repair_step="INICIO"
+		if [ $bios_check == "true" ]
+
+			# con bios actualizado
+			then
+				printf "[${m_info}] Se detectaron 4 particiones en el disco y el bios actualizado.\n[${m_info}] Se restaurará a puesto de BIOS.\n"
+				repair_windows=false
+				repair_boot=true
+				repair_hash=true
+				repair_step="BIOS"
+
+			# sin bios actializado
+			else
+				printf "[${m_info}] Detectaron 4 particiones en el disco. El bios no fue actualizado.\n[${m_info}] Se restaurará a puesto de INICIO.\n"
+				repair_windows=true
+				repair_boot=false
+				repair_hash=false
+				repair_step="INICIO"
+
+		fi
+
 fi
 
 # configuracion de proceso para 6 particiones	
@@ -194,6 +206,8 @@ sudo umount /jmdisk > /dev/null 2>&1
 # main process
 if [ $key == "p" ]
 	then
+
+		printf "[${m_info}] Procedeer.\n"
 		
 		# valida que la bateria esté conectada
 		bateria=$(cat /sys/class/power_supply/ADP1/online) #bateria=$(cat /sys/class/power_supply/ACAD/online)
@@ -205,107 +219,109 @@ if [ $key == "p" ]
 				printf "[${m_info}] Conexión a alimentación externa detectada\n"
 		fi
 		
+		# ¿volcado de imagen?
+		if [ $repair_windows == "true" ]
+			then
 
-		# mensaje volcado de imagen
-		printf "[${m_info}] Iniciando volcado de imagen...\n"
+				# mensaje volcado de imagen
+				printf "[${m_info}] Iniciando volcado de imagen...\n"
 
-		sleep 20
-	
-		# # mensaje para apagado de modo incorrecto
-		# # COLUMNS=$(tput cols) 
-		# # text="ERROR EN EL APAGADO DEL EQUIPO"
-		# # printf "\n\n \033[5;31m %*s \n" $(((${#text}+$COLUMNS)/2)) "$text"
-		# # printf "\n\t Por favor apaguelo manualmente manteniendo presionado el boton \n\t de apagado durante 5 segundos \033[0m \n\n"
-		
-		# # bucle de volcado y control de imagen		
-		# image_check=false
-		# image_counter=0
+				# bucle de volcado y control de imagen		
+				image_check=false
+				image_counter=0
 
-		# while [ $image_check == "false" ]
-		# 	do
-		# 		# contador de errores y borrado de log previo
-		# 		error_counter=0
-		# 		if [ -e /var/log/clonezilla.log ]
-		# 			then
-		# 				sudo rm -f /var/log/clonezilla.log
-		# 				printf "[${m_info}] Se eliminó correctamente el log anterior de Clonezilla.\n"
-		# 		fi
+				while [ $image_check == "false" ]
+					do
+						# contador de errores y borrado de log previo
+						error_counter=0
+						if [ -e /var/log/clonezilla.log ]
+							then
+								sudo rm -f /var/log/clonezilla.log
+								printf "[${m_info}] Se eliminó correctamente el log anterior de Clonezilla.\n"
+						fi
 
-		# 		# volcado de imagen
-		# 		image_name=$(cat $dir_base/versiones/image.version)
-		# 		gnome-terminal --full-screen --hide-menubar --profile texto --wait -- ./sys/volcado.sh $image_name $huayra
-		# 		printf "[${m_info}] Volcado de imágen finalizado.\n"
+						# volcado de imagen
+						image_name=$(cat $dir_base/versiones/image.version)
+						gnome-terminal --full-screen --hide-menubar --profile texto --wait -- ./sys/volcado.sh $image_name $huayra
+						printf "[${m_info}] Volcado de imágen finalizado.\n"
 
-		# 		#validaciones
-		# 		printf "[${m_info}] Iniciando validaciones...\n"
+						#validaciones
+						printf "[${m_info}] Iniciando validaciones...\n"
 
-		# 		# validación de particiones
-		# 		if [ $(grep -c $huayra /proc/partitions) = 6 ]
-		# 			then
-		# 				printf "[${m_pass}]"
-		# 			else
-		# 				printf "[${m_fail}]"
-		# 				error_counter=$((error_counter+1))
-		# 		fi
-		# 		printf " Particiones en disco de destino.\n"
+						# validación de particiones
+						if [ $(grep -c $huayra /proc/partitions) = 6 ]
+							then
+								printf "[${m_pass}]"
+							else
+								printf "[${m_fail}]"
+								error_counter=$((error_counter+1))
+						fi
+						printf " Particiones en disco de destino.\n"
 
-		# 		sleep .1
+						sleep .1
 
-		# 		# validafion finalizacion del proceso Clonezilla
-		# 		if [ -e /var/log/clonezilla.log ]
-		# 			then
-		# 				if [ $(cat /var/log/clonezilla.log | grep -c "Ending /usr/sbin/ocs-sr at" ) = 1 ]
-		# 					then
-		# 						printf "[${m_pass}]"
-		# 					else
-		# 						printf "[${m_fail}]"
-		# 						error_counter=$((error_counter+1))
-		# 				fi
-		# 			else
-		# 				printf "[${m_fail}]"
-		# 				error_counter=$((error_counter+1))
-		# 		fi
-		# 		printf " Finalización del proceso Clonezilla.\n"
-		# 		sleep .1
+						# validafion finalizacion del proceso Clonezilla
+						if [ -e /var/log/clonezilla.log ]
+							then
+								if [ $(cat /var/log/clonezilla.log | grep -c "Ending /usr/sbin/ocs-sr at" ) = 1 ]
+									then
+										printf "[${m_pass}]"
+									else
+										printf "[${m_fail}]"
+										error_counter=$((error_counter+1))
+								fi
+							else
+								printf "[${m_fail}]"
+								error_counter=$((error_counter+1))
+						fi
+						printf " Finalización del proceso Clonezilla.\n"
+						sleep .1
 
-		# 		# validafion errores del proceso Clonezilla
-		# 		if [ -e /var/log/clonezilla.log ]
-		# 			then
-		# 				if [ $(tail -1 /var/log/clonezilla.log | cut -d'!' -f 1 | grep -c "Program terminated" ) = 0 ]
-		# 					then
-		# 						printf "[${m_pass}]"
-		# 					else
-		# 						printf "[${m_fail}]"
-		# 						error_counter=$((error_counter+1))
-		# 				fi
-		# 			else
-		# 				printf "[${m_fail}]"
-		# 				error_counter=$((error_counter+1))
-		# 		fi
-		# 		printf " Control de errores en proceso Clonezilla.\n"
-		# 		sleep .1
-			
-		# 		# valida si hay un error y muestra el mensaje correspondiente
-		# 		printf "[${m_info}] Errores encontrados = ${error_counter}\n"
-		# 		if [ $error_counter != 0 ]
-		# 			then
-		# 				image_counter=$((image_counter+1))
-		# 				gnome-terminal --full-screen --hide-menubar --profile texto-error --wait -- ./sys/error-volcado.sh $image_counter
-		# 			else
-		# 				gnome-terminal --full-screen --hide-menubar --profile texto-ok --wait -- ./sys/volcado-ok.sh $ubuntu
-		# 				image_check=true
-		# 		fi
+						# validafion errores del proceso Clonezilla
+						if [ -e /var/log/clonezilla.log ]
+							then
+								if [ $(tail -1 /var/log/clonezilla.log | cut -d'!' -f 1 | grep -c "Program terminated" ) = 0 ]
+									then
+										printf "[${m_pass}]"
+									else
+										printf "[${m_fail}]"
+										error_counter=$((error_counter+1))
+								fi
+							else
+								printf "[${m_fail}]"
+								error_counter=$((error_counter+1))
+						fi
+						printf " Control de errores en proceso Clonezilla.\n"
+						sleep .1
+					
+						# valida si hay un error y muestra el mensaje correspondiente
+						printf "[${m_info}] Errores encontrados = ${error_counter}\n"
+						if [ $error_counter != 0 ]
+							then
+								image_counter=$((image_counter+1))
+								gnome-terminal --full-screen --hide-menubar --profile texto-error --wait -- ./sys/error-volcado.sh $image_counter
+							else
+								gnome-terminal --full-screen --hide-menubar --profile texto-ok --wait -- ./sys/volcado-ok.sh $ubuntu
+								image_check=true
+						fi
 
-		# 	done
+					done
+		fi
+
+
+### WORKING !!!
+
+
+
 	else
-		printf "[${m_info}] Cancelado.\n"
+		printf "[${m_info}] Cancelar.\n"
 fi
 
 printf "[${m_info}] Apagando el equipo...\n"
 
 # mensaje de apagado
 printf "\n\n\n\033[1;30m APAGANDO EL EQUIPO \033[0m"
-printf "\n Espere hasta que la pantalla quede en negro y el LED indicador\n\t de encendido se apague"
+printf "\n Espere hasta que la pantalla quede en negro y el LED indicador\n de encendido se apague"
 
 sleep 5
 shutdown now
