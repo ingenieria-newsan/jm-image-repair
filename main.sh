@@ -174,10 +174,10 @@ fi
 printf " Reparación de hash de finalización de runing.\n\n"
 
 printf "\tUna vez finalizado el proceso, disponga el equipo al puesto: \033[1;36m ${repair_step} \033[0m \n"
-printf "\tRecuerde siempre verificar el estado de la unidad en el sistema de trazabilidad.\n"
+printf "\n\tRecuerde siempre verificar el estado de la unidad en el trazabilidad \n\tantes de proceder.\n"
 
 text="--- PRESIONE 'P' PARA PROCEDER O 'C' PARA CANCELAR ---"
-printf "\n\n\n %*s \n\n" $(((${#text}+$COLUMNS)/2)) "$text"
+printf "\n\n %*s \n\n" $(((${#text}+$COLUMNS)/2)) "$text"
 
 # espera que se presione una tecla ---->>> P = Procedeer | C = Cancelar 
 read -s -n 1 -p "" key
