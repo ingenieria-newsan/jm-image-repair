@@ -12,6 +12,10 @@ m_no='\033[1;31m NO \033[0m' # ${m_fail}
 SCRIPT=$(readlink -f $0);
 dir_base=`dirname $SCRIPT`;
 
+# muestra la version de la herramienta
+version=$(cat $dir_base/.git/ref/heads/master)
+printf "[${m_info}] Compilacion de la herramienta = ${version}\n"
+
 # chequea que nombre tiene el disco de ubuntu y el de huayra
 printf "[${m_info}] Detectando discos...\n"
 ubuntu=$(lsblk -no pkname $(findmnt -n / | awk '{ print $2 }'))
