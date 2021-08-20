@@ -115,11 +115,11 @@ fi
 printf "\n\t- Recuerde que si el equipo fue abierto debe disponerse al puesto TESTEO 01.\n"
 printf "\t- Recuerde siempre verificar el estado de la unidad en TRAZABILIDAD tantes de proceder.\n"
 
-printf "\n\n\tPRESIONE UNA DE LAS OPCIONES PARA CONTINUAR, O 'C' PARA CANCELAR"
+printf "\n\n\tPRESIONE UNA DE LAS OPCIONES PARA CONTINUAR, O 'C' PARA CANCELAR \n\n"
 
 # espera que se presione una tecla 
 read -s -n 1 -p "" key
-while [ $key != "c" ] && [ $key != "t" ] && [ $key != "b" ]
+while [ [ $key != "c" ] && [ $key != "t" ] ] && [ $key != "b" ]
 	do
 		read -s -n 1 -p "" key
 done
