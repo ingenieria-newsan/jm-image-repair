@@ -34,11 +34,9 @@ sudo umount /dev/${ubuntu}3 > /dev/null 2>&1
 sudo umount /jmdisk > /dev/null 2>&1
 
 sudo mkdir /jmdisk > /dev/null 2>&1
-sudo mkdir /jmefi > /dev/null 2>&1
 
 sudo mount /dev/${ubuntu}3 /home/partimag
 sudo mount /dev/${huayra}3 /jmdisk > /dev/null 2>&1
-sudo mount /dev/${huayra}1 /jmefi > /dev/null 2>&1
 
 sleep .5
 
