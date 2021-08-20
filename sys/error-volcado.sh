@@ -6,7 +6,7 @@
 # mensaje de error
 clear
 COLUMNS=$(tput cols) 
-title="ERROR EN EL VOLCADO DE LA IMAGEN ( intento #${1} )"
+title="ERROR EN EL VOLCADO DE LA IMAGEN O GENERACIÓN DE HASH ( intento #${1} )"
 printf "\n\n \033[1;30m %*s \033[0m \n" $(((${#title}+$COLUMNS)/2)) "$title"
 printf "\n\n\t 1) Presione 'L' para reintentar."
 printf "\n\n\t 2) Presione 'A' para cancelar"

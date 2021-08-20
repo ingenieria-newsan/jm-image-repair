@@ -103,7 +103,7 @@ printf "[${m_info}] repair_2_bios=${repair_2_bios} \n"
 sleep .5
 
 # muestra mensaje en pantalla y espera confirmación
-printf "\n\n\t\033[1;30m\033[1;41m REPARACIÓN DE IMAGEN \033[0m \n"
+printf "\n\n\t\033[1;30m\033[1;41m REPARACIÓN DE IMAGEN DE TESTEO \033[0m \n"
 printf "\n\tOpciones habilitadas:\n"
 printf "\n\t[\033[1;32m LETRA T \033[0m] Reparación a puesto TESTEO 01.\n\t"
 
@@ -126,10 +126,6 @@ done
 
 sleep .5
 
-# desmonta el disco donde se encuentra el flag del running
-sudo umount /jmdisk > /dev/null 2>&1
-sudo umount /jmefi > /dev/null 2>&1
-
 # main process
 if [ $key == "t" ] || [ $key == "b" ]
 	then
@@ -144,102 +140,142 @@ if [ $key == "t" ] || [ $key == "b" ]
 				gnome-terminal --full-screen --hide-menubar --profile texto-error --wait -- ./sys/error-bateria.sh
 		fi
 
-		# ¿volcado de imagen?
-		if [ $partition_qtty != 4 ]
-			then
+		# bucle de volcado y control de imagen		
+		image_check=false
+		image_counter=0
 
+		while [ $image_check == "false" ]
+			do
+			
 				# mensaje volcado de imagen
 				printf "[${m_info}] Iniciando volcado de imagen...\n"
 
-				# bucle de volcado y control de imagen		
-				image_check=false
-				image_counter=0
+				# desmonta particiones del disco target
+				sudo umount /jmdisk > /dev/null 2>&1
 
-				while [ $image_check == "false" ]
-					do
-						# contador de errores y borrado de log previo
-						error_counter=0
-						if [ -e /var/log/clonezilla.log ]
+				# contador de errores y borrado de log previo
+				error_counter=0
+				if [ -e /var/log/clonezilla.log ]
+					then
+						sudo rm -f /var/log/clonezilla.log
+						printf "[${m_info}] Se eliminó correctamente el log anterior de Clonezilla.\n"
+				fi
+
+				# volcado de imagen
+				image_name=$(cat $dir_base/versiones/image.version)
+				gnome-terminal --full-screen --hide-menubar --profile texto --wait -- ./sys/volcado.sh $image_name $huayra
+				printf "[${m_info}] Volcado de imágen finalizado.\n"
+
+				# ¿generar hash?
+				if [ $repair_2_bios == "true" ] && [ $key == "b" ]
+					then
+
+						# mensaje volcado de imagen
+						printf "[${m_info}] Generando hash.\n"
+
+						# monta nuevamente la partición del disco target
+						sudo umount /jmdisk > /dev/null 2>&1
+						sudo mkdir /jmdisk > /dev/null 2>&1
+						sudo mount /dev/${huayra}3 /jmdisk > /dev/null 2>&1
+
+						# guarda el hash en el disco 
+						echo $hash_equipo >> /jmdisk/SHA1/test
+
+						# leo el archivo sha1 si existe
+						if [ -e /jmdisk/SHA1/test.txt ]
 							then
-								sudo rm -f /var/log/clonezilla.log
-								printf "[${m_info}] Se eliminó correctamente el log anterior de Clonezilla.\n"
+								hash_archivo=$(tr -dc '[[:print:]]' <<< "$(cat /jmdisk/SHA1/test.txt)")   
 						fi
 
-						# volcado de imagen
-						image_name=$(cat $dir_base/versiones/image.version)
-						gnome-terminal --full-screen --hide-menubar --profile texto --wait -- ./sys/volcado.sh $image_name $huayra
-						printf "[${m_info}] Volcado de imágen finalizado.\n"
+						# muestra los hash a los fines de hacer debug
+						printf "[${m_info}] hash_archivo=${hash_archivo} \n[${m_info}] hash_equipo=${hash_equipo} \n"
 
-						#validaciones
-						printf "[${m_info}] Iniciando validaciones...\n"
+						sleep .5
 
-						# validación de particiones
-						if [ $(grep -c $huayra /proc/partitions) = 4 ]
+				fi
+
+				#validaciones
+				printf "[${m_info}] Iniciando validaciones...\n"
+
+				# validacion de hash
+				if [ $hash_equipo = $hash_archivo ]
+					then
+						printf "[${m_pass}]"
+					else
+						printf "[${m_fail}]"
+						error_counter=$((error_counter+1))
+				fi
+				printf " Validación de hash.\n"
+
+				# validación de particiones
+				if [ $(grep -c $huayra /proc/partitions) = 5 ]
+					then
+						printf "[${m_pass}]"
+					else
+						printf "[${m_fail}]"
+						error_counter=$((error_counter+1))
+				fi
+				printf " Particiones en disco de destino.\n"
+
+				sleep .5
+
+				# validafion finalizacion del proceso Clonezilla
+				if [ -e /var/log/clonezilla.log ]
+					then
+						if [ $(cat /var/log/clonezilla.log | grep -c "Ending /usr/sbin/ocs-sr at" ) = 1 ]
 							then
 								printf "[${m_pass}]"
 							else
 								printf "[${m_fail}]"
 								error_counter=$((error_counter+1))
 						fi
-						printf " Particiones en disco de destino.\n"
+					else
+						printf "[${m_fail}]"
+						error_counter=$((error_counter+1))
+				fi
+				printf " Finalización del proceso Clonezilla.\n"
+				
+				sleep .5
 
-						sleep .1
-
-						# validafion finalizacion del proceso Clonezilla
-						if [ -e /var/log/clonezilla.log ]
+				# validafion errores del proceso Clonezilla
+				if [ -e /var/log/clonezilla.log ]
+					then
+						if [ $(tail -1 /var/log/clonezilla.log | cut -d'!' -f 1 | grep -c "Program terminated" ) = 0 ]
 							then
-								if [ $(cat /var/log/clonezilla.log | grep -c "Ending /usr/sbin/ocs-sr at" ) = 1 ]
-									then
-										printf "[${m_pass}]"
-									else
-										printf "[${m_fail}]"
-										error_counter=$((error_counter+1))
-								fi
+								printf "[${m_pass}]"
 							else
 								printf "[${m_fail}]"
 								error_counter=$((error_counter+1))
 						fi
-						printf " Finalización del proceso Clonezilla.\n"
-						sleep .1
+					else
+						printf "[${m_fail}]"
+						error_counter=$((error_counter+1))
+				fi
+				printf " Control de errores en proceso Clonezilla.\n"
+				
+				sleep .5
+			
+				# valida si hay un error y muestra el mensaje correspondiente
+				printf "[${m_info}] Errores encontrados = ${error_counter}\n"
+				if [ $error_counter != 0 ]
+					then
+						image_counter=$((image_counter+1))
+						gnome-terminal --full-screen --hide-menubar --profile texto-error --wait -- ./sys/error-volcado.sh $image_counter
+					else
+						image_check=true
 
-						# validafion errores del proceso Clonezilla
-						if [ -e /var/log/clonezilla.log ]
+						puesto="TESTEO 01"
+
+						if [ $repair_2_bios == "true" ] && [ $key == "b" ]
 							then
-								if [ $(tail -1 /var/log/clonezilla.log | cut -d'!' -f 1 | grep -c "Program terminated" ) = 0 ]
-									then
-										printf "[${m_pass}]"
-									else
-										printf "[${m_fail}]"
-										error_counter=$((error_counter+1))
-								fi
-							else
-								printf "[${m_fail}]"
-								error_counter=$((error_counter+1))
-						fi
-						printf " Control de errores en proceso Clonezilla.\n"
-						sleep .1
-					
-						# valida si hay un error y muestra el mensaje correspondiente
-						printf "[${m_info}] Errores encontrados = ${error_counter}\n"
-						if [ $error_counter != 0 ]
-							then
-								image_counter=$((image_counter+1))
-								gnome-terminal --full-screen --hide-menubar --profile texto-error --wait -- ./sys/error-volcado.sh $image_counter
-							else
-								gnome-terminal --full-screen --hide-menubar --profile texto-ok --wait -- ./sys/volcado-ok.sh $ubuntu
-								image_check=true
-						fi
+								puesto="BIOS"
 
-					done
+						sleep .5
 
-			else
-				### RESTAURAR ARCHIVOS DE ARRANQUE
-		
-		fi
+						gnome-terminal --full-screen --hide-menubar --profile texto-ok --wait -- ./sys/volcado-ok.sh $puesto
+				fi
 
-		# ¿generar hash?
-
-### WORKING !!!
+			done
 
 	else
 		printf "[${m_info}] Cancelar.\n"
