@@ -198,14 +198,17 @@ if [ $key == "t" ] || [ $key == "b" ]
 				printf "[${m_info}] Iniciando validaciones...\n"
 
 				# validacion de hash
-				if [ $hash_equipo = $hash_archivo ]
+				if [ $repair_2_bios == "true" ] && [ $key == "b" ]
 					then
-						printf "[${m_pass}]"
-					else
-						printf "[${m_fail}]"
-						error_counter=$((error_counter+1))
+						if [ $hash_equipo = $hash_archivo ] 
+							then
+								printf "[${m_pass}]"
+							else
+								printf "[${m_fail}]"
+								error_counter=$((error_counter+1))
+						fi
+						printf " Validación de hash.\n"
 				fi
-				printf " Validación de hash.\n"
 
 				# validación de particiones
 				if [ $(grep -c $huayra /proc/partitions) = 5 ]
