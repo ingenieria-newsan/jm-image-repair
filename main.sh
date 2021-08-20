@@ -269,6 +269,7 @@ if [ $key == "t" ] || [ $key == "b" ]
 						if [ $repair_2_bios == "true" ] && [ $key == "b" ]
 							then
 								puesto="BIOS"
+						fi
 
 						sleep .5
 
